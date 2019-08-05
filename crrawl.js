@@ -1,43 +1,112 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
 
-const creeds = require('./crreds.js');
+const creeds = require("./crreds.js");
 
 async function run() {
   const browser = await puppeteer.launch({
-    headless: false
+    headless: false,
+    args: ["--disable-notifications"]
   });
 
   const page = await browser.newPage();
-  await page.goto('https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den-GB%26next%3D%252F&hl=en-GB&flowName=GlifWebSignIn&flowEntry=ServiceLogin');
-  
- // await page.waitForNavigation();
+  await page.goto(
+    "https://www.instagram.com/accounts/login/?source=auth_switcher"
+  );
 
-    //dom element selectors
-    const USERNAME_SELECTOR = '#identifierId';
-    
-    const BUTTON_SELECTOR1 = '#identifierNext > span > span';
+  //await page.waitForNavigation({ waitUntil: "networkidle2" });
 
-    
-    const PASSWORD_SELECTOR = '#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input';
-    
+  //dom element selectors
+  //  const USERNAME_SELECTOR = await page.$('input[name="username"]');
 
-    const BUTTON_SELECTOR2 = '#passwordNext > span > span';
-    
-   //puppeteer provides mehod 'click' to click a DOM 
+  //  const PASSWORD_SELECTOR =  await page.$('input[type="password"]');
+
+  const BUTTON_SELECTOR =
+    "#react-root > section > main > div > article > div > div:nth-child(1) > div > form > div:nth-child(4)";
+
+  //puppeteer provides mehod 'click' to click a DOM
   //and 'type' to type text in input box.
 
-  await page.click(USERNAME_SELECTOR);
+  await page.waitFor(5 * 1000);
+
+  await page.click('input[name="username"]');
+
+  await console.log("hello");
   await page.keyboard.type(creeds.username);
- // await page.waitFor(5*1000);
-  await page.click(BUTTON_SELECTOR1);
-
-  await page.waitFor(5*1000);
-  await page.click(PASSWORD_SELECTOR);
-  await page.waitFor(5*1000);
+  await page.waitFor(5 * 1000);
+  await page.click('input[type="password"]');
+  // await page.waitFor(5*1000);
   await page.keyboard.type(creeds.password);
-  //await page.waitFor(5*1000);
-  await page.click(BUTTON_SELECTOR2);
+  //await page.waitFor(5 * 1000);
+  await page.click(BUTTON_SELECTOR);
+  await page.waitForNavigation({ waitUntil: "networkidle2" });
 
+  //await page.waitFor(8 * 1000);
+
+  //const BUTTON_SELECTOR_ID = await page.$('a[title="pearlvpuri"');
+
+  //  var selector = ".FPmhX.notranslate.nJAzx"
+
+  // go for catch-throw..
+  // await page.waitForSelector('.FPmhX.notranslate.nJAzx');
+
+  //  await page.click('h2[class="BrX75"]');
+
+  await console.log("hello");
+
+  await page.goto("https://www.instagram.com/diamirzaofficial/");
+
+  //await page.waitForNavigation({ waitUntil: "networkidle2" });
+
+  //await page.click(selector)
+
+  let urls = await page.evaluate(() => {
+    let results = [];
+
+    let items = document.querySelectorAll(".k9GMp");
+
+    console.log(items);
+    items.forEach(item => {
+      console.log(item);
+      let b = item.innerText.split("\n");
+      console.log(b);
+      results.push({
+        post: b[0],
+        follwers: b[1],
+        following: b[2]
+      });
+    });
+
+    // window.history.back();
+
+    // });
+
+    /* if (i == clik.length - 1) {
+        result.push(results);
+        console.log("break worked");
+        break;
+      } else {
+        console.log("else block");
+        result.push(results);
+        window.history.back();
+      }*/
+
+    console.log("in for loop");
+
+    return results;
+  });
+
+  await console.log(urls);
+
+  console.log("last");
+
+  /*let listLength = await page.evaluate((sel) => {
+    return document.getElementsByClassName(sel).length;
+  }, LENGTH_SELECTOR_CLASS);
+
+  console.log(listLength);
+
+
+  */
 }
 
 run();
