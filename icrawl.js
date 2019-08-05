@@ -1,6 +1,16 @@
 const puppeteer = require("puppeteer");
 const creeds = require("./crreds");
 
+const currentDate = new Date();
+const timeStamp = currentDate.getTime();
+const createCsvWriter = require("csv-writer").createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+  path: "./instagram_raja_" + timeStamp + "_v1.csv",
+  header: [
+    { id: "username", title: "USERNAME" },
+    { id: "userinfo", title: "FOLLOWING" }
+  ]
+});
 async function run() {
   const browser = await puppeteer.launch({
     headless: false,
@@ -70,12 +80,15 @@ async function run() {
 
   await console.log(pageurl);
 
+  let final = [];
+  let userinfo = [];
+  let username = [];
   for (i = 0; i < pageurl.length; i++) {
     await page.goto("https://www.instagram.com" + pageurl[i], {
       waitUntil: "networkidle2"
     });
 
-    let username = await page.evaluate(() => {
+    username = await page.evaluate(() => {
       var nitem = [];
       let name = document.querySelectorAll(".rhpdm");
       console.log(name);
@@ -83,23 +96,43 @@ async function run() {
       return nitem;
     });
 
-    let userinfo = await page.evaluate(() => {
+    userinfo = await page.evaluate(() => {
       var items = [];
       let info = document.querySelectorAll(".k9GMp");
       console.log(info);
-      let b = info[0].innerText.split("\n");
+      let b = info[0].innerText;
+      items.push(b);
+
+      /* let b = info[0].innerText.split("\n");
       console.log(b);
       items.push({
         post: b[0],
-        follwers: b[1],
+        followers: b[1],
         following: b[2]
       });
+
+      console.log(b[0], b[1], b[2]); */
+
+      console.log(items);
       return items;
     });
+    // await console.log(username);
+    // await console.log(userinfo);
 
-    await console.log(username);
-    await console.log(userinfo);
+    final.push({
+      username: username,
+      userinfo: userinfo
+    });
+
+    //csvWriter.writeRecords()
   }
+
+  await console.log(final);
+  csvWriter.writeRecords(final).then(() => {
+    console.log("..done");
+  });
+
+  console.log("over");
 }
 
 run();
